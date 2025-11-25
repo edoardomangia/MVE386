@@ -1,0 +1,20 @@
+name: MVE386
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - scikit-image
+  - imageio
+  - networkx
+  - xlsxwriter
+  - pip
+  - pip:
+      - gvxr==2.0.10
+      - xraylib
+      - spekpy==2.5.3
+      - xpecgen==1.3.0
+

@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/edoar/Chalmers/MVE386/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
