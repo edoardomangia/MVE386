@@ -1,0 +1,18 @@
+/run/initialize
+
+/vis/open OGL 600x600-0+0
+
+/vis/viewer/set/viewpointVector 1 1 1
+/vis/viewer/set/autoRefresh true
+
+/vis/drawVolume
+
+/vis/scene/add/trajectories smooth
+/vis/scene/endOfEventAction accumulate
+/vis/scene/add/scale 10 cm
+/vis/scene/add/axes
+/vis/scene/add/eventID
+
+/vis/scene/add/text 0 2.5 5 cm 12 0 0 Aluminum Sample (Al)
+/vis/scene/add/text 0 -2.5 10.5 cm 12 0 0 Detector Volume (NaI)
+/vis/scene/add/text 0 0 -50 cm 12 0 0 Particle Gun
