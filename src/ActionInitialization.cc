@@ -12,7 +12,7 @@ void ActionInitialization::Build() const
 {
     SetUserAction(new PrimaryGeneratorAction(config));
     
-    SetUserAction(new RunAction());
+    SetUserAction(new RunAction(config));
     
-    SetUserAction(new SteppingAction());
+    SetUserAction(new SteppingAction(config.output_dir));
 }

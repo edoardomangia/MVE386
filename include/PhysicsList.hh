@@ -1,5 +1,5 @@
 /*
- * src/PhysicsList.hh
+ * include/PhysicsList.hh
  */
 
 #pragma once
@@ -11,4 +11,3 @@ public:
     PhysicsList();
     ~PhysicsList() override = default;
 };
-

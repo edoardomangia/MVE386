@@ -1,5 +1,5 @@
 /*
- * src/DetectorConstruction.hh
+ * include/DetectorConstruction.hh
  */
 #pragma once
 

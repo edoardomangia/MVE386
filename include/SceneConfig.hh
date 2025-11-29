@@ -31,10 +31,19 @@ struct ObjectConfig {
     ObjectMaterial material;
 };
 
+struct VoxelGridConfig {
+    int nx = 100;
+    int ny = 100;
+    int nz = 100;
+    double half_size_mm = 10.0; // Cube half-length; default [-10, +10] mm
+};
+
 struct SceneConfig {
     BeamConfig beam;
-    ObjectConfig dragon;      
+    ObjectConfig object;
+    VoxelGridConfig voxel_grid;
+    std::string config_dir;    // Absolute directory containing the config file
+    std::string output_dir;    // Where to store simulation outputs
 
     static SceneConfig Load(const std::string& path);
 };
-

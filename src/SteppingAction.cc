@@ -2,27 +2,27 @@
  * src/SteppingAction.cc
  * Data extraction, logs energy deposition (...in water box now)
  */
+
 #include "SteppingAction.hh"
+#include "DoseVoxelGrid.hh"
 
 #include "G4Step.hh"
 #include "G4Track.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4SystemOfUnits.hh"
-#include "DoseVoxelGrid.hh"
-#include "GenVTI.hh"
+
 #include <fstream>
+#include <filesystem>
 
-// Helper, a static ofstream, so we open the file only once
-static std::ofstream& GetStepLogFile()
+SteppingAction::SteppingAction(const std::string& output_dir)
 {
-    static std::ofstream file("steps.csv");
-    static bool headerWritten = false;
-
-    if (file.is_open() && !headerWritten) {
-        file << "x_mm,y_mm,z_mm,edep_keV\n";
-        headerWritten = true;
+    std::filesystem::create_directories(output_dir);
+    auto path = std::filesystem::path(output_dir) / "steps.csv";
+    file_.open(path);
+    if (file_.is_open() && !headerWritten_) {
+        file_ << "x_mm,y_mm,z_mm,edep_keV\n";
+        headerWritten_ = true;
     }
-    return file;
 }
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
@@ -36,10 +36,14 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     auto vol = pre->GetPhysicalVolume();
     if (!vol) return;
 
-    if (vol->GetName() != "DragonPV") return;
+    if (vol->GetName() != "ModelPV") return;
 
     auto pos = pre->GetPosition();
     
+    if (file_.is_open()) {
+        file_ << pos.x()/mm << "," << pos.y()/mm << "," << pos.z()/mm << "," << edep/keV << "\n";
+    }
+
     // Append data
     DoseVoxelGrid::Instance().AddEnergy(
         pos.x()/mm, pos.y()/mm, pos.z()/mm,

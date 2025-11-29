@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Geant4 REQUIRED ui_all vis_all)
 include(${Geant4_USE_FILE})
 
-add_executable(liquid_dose_sim
+add_executable(run
     src/main.cc
     src/DetectorConstruction.cc
     src/PhysicsList.cc
@@ -20,13 +20,12 @@ add_executable(liquid_dose_sim
     src/SceneConfig.cc
 )
 
-target_include_directories(liquid_dose_sim 
+target_include_directories(run 
     PRIVATE 
         include
 )
 
-target_link_libraries(liquid_dose_sim
+target_link_libraries(run
     PUBLIC
         ${Geant4_LIBRARIES}
 )
-

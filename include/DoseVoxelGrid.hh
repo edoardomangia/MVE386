@@ -1,5 +1,5 @@
 /* 
- * DoseVoxelGrid.hh
+ * include/DoseVoxelGrid.hh
  */
 
 #pragma once
@@ -25,4 +25,3 @@ private:
     DoseVoxelGrid() = default;
     std::vector<float> grid;
 };
-

@@ -1,12 +1,15 @@
 /* src/PrimaryGeneratorAction.cc
  * What particles we shoot
  */
+
 #include "PrimaryGeneratorAction.hh"
+
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Event.hh"
 #include "G4ThreeVector.hh"
+
 #include <random>
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(const SceneConfig& cfg)
@@ -41,10 +44,17 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     G4ThreeVector dir = (det - src).unit();
     fParticleGun->SetParticleMomentumDirection(dir);
 
-    // Simple uniform beam cross-section: sample within detector area
+    // Uniform beam cross-section: sample within detector area
     static thread_local std::mt19937 rng{12345};
     double sx = b.detector_pixel_size_mm[0] * b.detector_pixels[0]; // full size in mm
     double sy = b.detector_pixel_size_mm[1] * b.detector_pixels[1];
+    
+    /*
+     * With 2048px x 0.05mm, beam footprint ~102mm wide/thread_local
+     * > larger than the default 20mm voxel cube
+     * > cube is fully illuminated
+     * > lots of photons miss for nothing
+     */
 
     std::uniform_real_distribution<double> ux(-0.5*sx*mm, 0.5*sx*mm);
     std::uniform_real_distribution<double> uy(-0.5*sy*mm, 0.5*sy*mm);
@@ -66,4 +76,3 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     fParticleGun->SetParticlePosition(pos);
     fParticleGun->GeneratePrimaryVertex(event);
 }
-

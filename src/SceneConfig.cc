@@ -4,18 +4,23 @@
  */
 
 #include "SceneConfig.hh"
-#include <fstream>
 #include "json.hpp"
+
+#include <fstream>
+#include <filesystem>
 
 using json = nlohmann::json;
 
 SceneConfig SceneConfig::Load(const std::string& path)
 {
-    std::ifstream f(path);
+    std::filesystem::path cfgPath = std::filesystem::absolute(path);
+    std::ifstream f(cfgPath);
     json j;
     f >> j;
 
     SceneConfig cfg;
+    cfg.config_dir = cfgPath.parent_path().string();
+    cfg.output_dir = (cfgPath.parent_path() / "output").string();
 
     auto jb = j["beam"];
     cfg.beam.type               = jb.value("type", "parallel");
@@ -36,17 +41,31 @@ SceneConfig SceneConfig::Load(const std::string& path)
     cfg.beam.photon_flux_per_s  = jb["photon_flux_per_s"];
     cfg.beam.exposure_time_s    = jb.value("exposure_time_s", 1.0);
 
-    // Only one object in your JSON: Dragon
+    // Only one object in setup.JSON
     auto jo = j["objects"][0];
-    cfg.dragon.id        = jo["id"];
-    cfg.dragon.mesh_path = jo["mesh_path"];
-    cfg.dragon.units     = jo.value("units", "mm");
+    cfg.object.id        = jo["id"];
+    std::filesystem::path meshPath = jo["mesh_path"].get<std::string>();
+    if (meshPath.is_relative()) {
+        meshPath = cfgPath.parent_path() / meshPath;
+    }
+    cfg.object.mesh_path = meshPath.string();
+    cfg.object.units     = jo.value("units", "mm");
 
     auto jm = jo["material"];
-    cfg.dragon.material.formula        = jm["formula"];
-    cfg.dragon.material.density_g_cm3  = jm["density_g_cm3"];
-    cfg.dragon.material.cp_J_kgK       = jm["cp_J_kgK"];
+    cfg.object.material.formula        = jm["formula"];
+    cfg.object.material.density_g_cm3  = jm["density_g_cm3"];
+    cfg.object.material.cp_J_kgK       = jm["cp_J_kgK"];
+
+    // Voxel grid config to keep Geant and ParaView in sync
+    if (j.contains("voxel_grid")) {
+        auto jvg = j["voxel_grid"];
+        if (jvg.contains("counts")) {
+            cfg.voxel_grid.nx = jvg["counts"][0];
+            cfg.voxel_grid.ny = jvg["counts"][1];
+            cfg.voxel_grid.nz = jvg["counts"][2];
+        }
+        cfg.voxel_grid.half_size_mm = jvg.value("half_size_mm", cfg.voxel_grid.half_size_mm);
+    }
 
     return cfg;
 }
-

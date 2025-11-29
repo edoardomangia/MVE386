@@ -1,10 +1,12 @@
 /* 
- * src/ActionInitialization.hh
+ * include/ActionInitialization.hh
  */
+
 #pragma once
 
-#include "G4VUserActionInitialization.hh"
 #include "SceneConfig.hh"
+
+#include "G4VUserActionInitialization.hh"
 
 class ActionInitialization : public G4VUserActionInitialization {
 public:
@@ -17,4 +19,3 @@ public:
 private:
     SceneConfig config;
 };
-

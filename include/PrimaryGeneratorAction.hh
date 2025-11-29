@@ -1,5 +1,5 @@
 /*
- * src/PrimaryGeneratorAction.hh
+ * include/PrimaryGeneratorAction.hh
  */
 
 #pragma once
