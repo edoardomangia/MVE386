@@ -38,10 +38,21 @@ struct VoxelGridConfig {
     double half_size_mm = 10.0; // Cube half-length; default [-10, +10] mm
 };
 
+struct AcquisitionConfig {
+    std::string mode = "step";            // "step" (step-and-shoot) or "fly" (continuous)
+    int    num_projections = 1;
+    double start_angle_deg = 0.0;
+    double end_angle_deg   = 360.0;
+    std::array<double,3> rotation_axis    = {0.0, 0.0, 1.0};   // axis in world coords
+    std::array<double,3> rotation_center_mm = {0.0, 0.0, 0.0}; // pivot point
+    int total_events = 0;                 // filled in from CLI nEvents
+};
+
 struct SceneConfig {
     BeamConfig beam;
     ObjectConfig object;
     VoxelGridConfig voxel_grid;
+    AcquisitionConfig acquisition;
     std::string config_dir;    // Absolute directory containing the config file
     std::string output_dir;    // Where to store simulation outputs
 

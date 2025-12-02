@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Geant4 REQUIRED ui_all vis_all)
 include(${Geant4_USE_FILE})
+find_package(assimp REQUIRED)
 
 add_executable(run
     src/main.cc
@@ -28,4 +29,10 @@ target_include_directories(run
 target_link_libraries(run
     PUBLIC
         ${Geant4_LIBRARIES}
+        assimp::assimp
+)
+
+target_compile_definitions(run
+    PRIVATE
+        USE_CADMESH_ASSIMP_READER
 )

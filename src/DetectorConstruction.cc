@@ -6,6 +6,7 @@
 #include "DetectorConstruction.hh"
 #include "CADMesh.hh"
 
+#include <memory>
 #include "G4Box.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
@@ -182,7 +183,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     }();
 
     // Mesh via CADMesh
-    auto mesh = CADMesh::TessellatedMesh::FromSTL(obj.mesh_path);
+    // Use Assimp reader so binary STL (and other formats) are accepted
+    auto mesh = CADMesh::TessellatedMesh::FromSTL(
+        obj.mesh_path,
+        std::make_shared<CADMesh::File::ASSIMPReader>());
 
     // Handle units from JSON ("mm", "cm", "m", ...)
     double unitScale = 1.0;           // CADMesh expects mm by default

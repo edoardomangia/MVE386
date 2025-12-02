@@ -131,6 +131,7 @@ def main():
     cp = float(mat["cp_J_kgK"])
 
     # Scale from simulated events to physical photons
+    # scale = 1.0
     scale = (flux * exposure) / n_events
 
     # Energy to joules

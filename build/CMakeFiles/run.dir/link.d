@@ -44,8 +44,11 @@ run: \
   /home/edoar/src/geant4-install/lib/libG4global.so \
   /home/edoar/src/geant4-install/lib/libG4clhep.so \
   /home/edoar/src/geant4-install/lib/libG4zlib.so \
+  /usr/lib/libassimp.so.6.0.2 \
   /usr/lib/libexpat.so \
   /home/edoar/src/geant4-install/lib/libG4ptl.so.3.0.0 \
+  /usr/lib/libz.so \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/librt.a \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/libstdc++.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/libm.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/libm.so \
@@ -177,9 +180,15 @@ CMakeFiles/run.dir/src/SceneConfig.cc.o:
 
 /home/edoar/src/geant4-install/lib/libG4zlib.so:
 
+/usr/lib/libassimp.so.6.0.2:
+
 /usr/lib/libexpat.so:
 
 /home/edoar/src/geant4-install/lib/libG4ptl.so.3.0.0:
+
+/usr/lib/libz.so:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/librt.a:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/libstdc++.so:
 

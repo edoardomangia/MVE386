@@ -35,12 +35,12 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
     DoseVoxelGrid::Instance().Initialize(NX, NY, NZ, xmin, ymin, zmin, dx, dy, dz);
 
-    G4cout << "Voxel grid init: "
-           << NX << "x" << NY << "x" << NZ << " voxels\n";
 }
 
 void RunAction::EndOfRunAction(const G4Run* run)
 {
+    if (!IsMaster()) return; // Only master writes output
+
     auto& grid = DoseVoxelGrid::Instance();
 
     // Collect metadata for .vti file 
@@ -72,6 +72,4 @@ void RunAction::EndOfRunAction(const G4Run* run)
                      grid.xmin, grid.ymin, grid.zmin,
                      grid.dx, grid.dy, grid.dz,
                      meta);
-
-    G4cout << "Stored in " << outPath << G4endl;
 }

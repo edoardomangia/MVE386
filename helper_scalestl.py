@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-Scale and recenter STLs to match the Geant4 voxel box, writing ASCII *_ascii_scaled.stl.
+Scale and recenter STLs to match the Geant4 voxel box, writing binary *_scaled.stl.
 
 Reads setup.json for voxel_grid.half_size_mm and mesh units, fits meshes to 90%
-of the cube, recenters to the origin, and writes <mesh_name>_ascii_scaled.stl
-alongside the source mesh.
+of the cube, recenters to the origin, and writes <mesh_name>_scaled.stl
+alongside the source mesh (binary STL).
 
 Usage:
-  python helper_scalestl.py                # process data/*.stl (excluding *_ascii_scaled)
+  python helper_scalestl.py                # process data/*.stl (excluding *_scaled.stl)
   python helper_scalestl.py path1.stl ...  # explicit files
 """
 
@@ -89,18 +89,15 @@ def read_stl(path: str) -> List[Tuple[Tuple[float, float, float], Tuple[float, .
     return tris
 
 
-def write_ascii_stl(path: str, tris: List[Tuple[Tuple[float, float, float], Tuple[float, ...]]]):
-    with open(path, "w") as o:
-        o.write("solid scaled\n")
+def write_binary_stl(path: str, tris: List[Tuple[Tuple[float, float, float], Tuple[float, ...]]]):
+    with open(path, "wb") as o:
+        header = b"scaled binary stl" + b" " * (80 - len("scaled binary stl"))
+        o.write(header)
+        o.write(struct.pack("<I", len(tris)))
         for normal, verts in tris:
-            o.write(f"  facet normal {normal[0]} {normal[1]} {normal[2]}\n")
-            o.write("    outer loop\n")
-            for i in range(3):
-                x, y, z = verts[3 * i : 3 * i + 3]
-                o.write(f"      vertex {x} {y} {z}\n")
-            o.write("    endloop\n")
-            o.write("  endfacet\n")
-        o.write("endsolid scaled\n")
+            o.write(struct.pack("<3f", *normal))
+            o.write(struct.pack("<9f", *verts))
+            o.write(struct.pack("<H", 0))
 
 
 def main():
@@ -123,7 +120,7 @@ def main():
         targets = args.paths
     else:
         targets = glob.glob(os.path.join("data", "*.stl"))
-        targets = [p for p in targets if not p.endswith("_ascii_scaled.stl")]
+        targets = [p for p in targets if not p.endswith("_scaled.stl")]
 
     for path in targets:
         if not os.path.isfile(path):
@@ -170,8 +167,8 @@ def main():
 
         base, _ = os.path.splitext(os.path.basename(path))
         out_dir = os.path.dirname(path) or "."
-        out_path = os.path.join(out_dir, f"{base}_ascii_scaled.stl")
-        write_ascii_stl(out_path, scaled_tris)
+        out_path = os.path.join(out_dir, f"{base}_scaled.stl")
+        write_binary_stl(out_path, scaled_tris)
         print(f"[ok] {path} -> {out_path} "
               f"(scale={scale:.4g}, unit={units}, half_size_mm={voxel_half_size})")
 

@@ -14,6 +14,7 @@ void DoseVoxelGrid::Initialize(int NX_, int NY_, int NZ_,
                                float xmin_, float ymin_, float zmin_,
                                float dx_, float dy_, float dz_) 
 {
+    G4AutoLock lock(&mutex);
     NX = NX_; NY = NY_; NZ = NZ_;
     xmin = xmin_; ymin = ymin_; zmin = zmin_;
     dx = dx_; dy = dy_; dz = dz_;
@@ -23,6 +24,7 @@ void DoseVoxelGrid::Initialize(int NX_, int NY_, int NZ_,
 
 void DoseVoxelGrid::AddEnergy(float x_mm, float y_mm, float z_mm, float edep_keV)
 {
+    G4AutoLock lock(&mutex);
     int ix = int((x_mm - xmin) / dx);
     int iy = int((y_mm - ymin) / dy);
     int iz = int((z_mm - zmin) / dz);
@@ -35,4 +37,3 @@ void DoseVoxelGrid::AddEnergy(float x_mm, float y_mm, float z_mm, float edep_keV
     int idx = ix + NX * (iy + NY * iz);
     grid[idx] += edep_keV;
 }
-

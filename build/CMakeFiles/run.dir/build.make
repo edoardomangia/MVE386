@@ -272,8 +272,10 @@ run: /home/edoar/src/geant4-install/lib/libG4intercoms.so
 run: /home/edoar/src/geant4-install/lib/libG4global.so
 run: /home/edoar/src/geant4-install/lib/libG4clhep.so
 run: /home/edoar/src/geant4-install/lib/libG4zlib.so
+run: /usr/lib/libassimp.so.6.0.2
 run: /usr/lib/libexpat.so
 run: /home/edoar/src/geant4-install/lib/libG4ptl.so.3.0.0
+run: /usr/lib/libz.so
 run: CMakeFiles/run.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/edoar/Chalmers/MVE386/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable run"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/run.dir/link.txt --verbose=$(VERBOSE)

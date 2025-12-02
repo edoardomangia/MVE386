@@ -45,17 +45,6 @@ void VTIWriter::Write(const std::string& filename,
       << "Origin=\"" << xmin << " " << ymin << " " << zmin << "\" "
       << "Spacing=\"" << dx << " " << dy << " " << dz << "\">\n";
 
-    if (!metadata.empty()) {
-        f << "    <FieldData>\n";
-        for (const auto& kv : metadata) {
-            f << "      <DataArray type=\"String\" Name=\""
-              << kv.first << "\" format=\"ascii\" NumberOfComponents=\"1\" NumberOfTuples=\"1\">\n";
-            f << "        " << kv.second << "\n";
-            f << "      </DataArray>\n";
-        }
-        f << "    </FieldData>\n";
-    }
-
     f << "    <Piece Extent=\""
       << x0 << " " << x1 << " "
       << y0 << " " << y1 << " "

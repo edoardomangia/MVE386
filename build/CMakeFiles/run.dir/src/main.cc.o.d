@@ -1,6 +1,6 @@
 CMakeFiles/run.dir/src/main.cc.o: /home/edoar/Chalmers/MVE386/src/main.cc \
  /usr/include/stdc-predef.h \
- /home/edoar/Chalmers/MVE386/include/DetectorConstruction.hh \
+ /home/edoar/Chalmers/MVE386/include/ActionInitialization.hh \
  /home/edoar/Chalmers/MVE386/include/SceneConfig.hh \
  /usr/include/c++/15.2.1/string \
  /usr/include/c++/15.2.1/bits/requires_hosted.h \
@@ -106,6 +106,8 @@ CMakeFiles/run.dir/src/main.cc.o: /home/edoar/Chalmers/MVE386/src/main.cc \
  /usr/include/c++/15.2.1/bits/uses_allocator_args.h \
  /usr/include/c++/15.2.1/tuple /usr/include/c++/15.2.1/array \
  /usr/include/c++/15.2.1/compare \
+ /home/edoar/src/geant4-install/include/Geant4/G4VUserActionInitialization.hh \
+ /home/edoar/Chalmers/MVE386/include/DetectorConstruction.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4VUserDetectorConstruction.hh \
  /home/edoar/src/geant4-install/include/Geant4/globals.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4ios.hh \
@@ -281,8 +283,6 @@ CMakeFiles/run.dir/src/main.cc.o: /home/edoar/Chalmers/MVE386/src/main.cc \
  /home/edoar/src/geant4-install/include/Geant4/G4GeomSplitter.hh \
  /home/edoar/src/geant4-install/include/Geant4/geomwdefs.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4Region.icc \
- /home/edoar/Chalmers/MVE386/include/ActionInitialization.hh \
- /home/edoar/src/geant4-install/include/Geant4/G4VUserActionInitialization.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4RunManagerFactory.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4MTRunManager.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4MTBarrier.hh \
@@ -555,6 +555,9 @@ CMakeFiles/run.dir/src/main.cc.o: /home/edoar/Chalmers/MVE386/src/main.cc \
  /usr/include/c++/15.2.1/bits/regex.tcc \
  /usr/include/c++/15.2.1/bits/regex_executor.h \
  /usr/include/c++/15.2.1/bits/regex_executor.tcc \
+ /home/edoar/src/geant4-install/include/Geant4/G4Threading.hh \
+ /home/edoar/src/geant4-install/include/Geant4/G4UIExecutive.hh \
+ /home/edoar/src/geant4-install/include/Geant4/G4VUIshell.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4UImanager.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4UIcommandStatus.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4VStateDependent.hh \
@@ -677,8 +680,6 @@ CMakeFiles/run.dir/src/main.cc.o: /home/edoar/Chalmers/MVE386/src/main.cc \
  /home/edoar/src/geant4-install/include/Geant4/G4UIsession.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4coutDestination.hh \
  /home/edoar/src/geant4-install/include/Geant4/G4UIbatch.hh \
- /home/edoar/src/geant4-install/include/Geant4/G4UIExecutive.hh \
- /home/edoar/src/geant4-install/include/Geant4/G4VUIshell.hh \
  /usr/include/c++/15.2.1/filesystem /usr/include/c++/15.2.1/bits/fs_fwd.h \
  /usr/include/c++/15.2.1/bits/fs_path.h /usr/include/c++/15.2.1/codecvt \
  /usr/include/c++/15.2.1/bits/fs_dir.h \

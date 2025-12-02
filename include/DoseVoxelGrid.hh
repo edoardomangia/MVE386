@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include "G4AutoLock.hh"
 
 class DoseVoxelGrid {
 public:
@@ -24,4 +25,5 @@ public:
 private:
     DoseVoxelGrid() = default;
     std::vector<float> grid;
+    G4Mutex mutex = G4MUTEX_INITIALIZER;
 };

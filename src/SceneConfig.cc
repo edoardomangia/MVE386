@@ -67,5 +67,24 @@ SceneConfig SceneConfig::Load(const std::string& path)
         cfg.voxel_grid.half_size_mm = jvg.value("half_size_mm", cfg.voxel_grid.half_size_mm);
     }
 
+    // Acquisition / rotation setup
+    if (j.contains("acquisition")) {
+        auto ja = j["acquisition"];
+        cfg.acquisition.mode = ja.value("mode", cfg.acquisition.mode);
+        cfg.acquisition.num_projections = ja.value("num_projections", cfg.acquisition.num_projections);
+        cfg.acquisition.start_angle_deg = ja.value("start_angle_deg", cfg.acquisition.start_angle_deg);
+        cfg.acquisition.end_angle_deg   = ja.value("end_angle_deg", cfg.acquisition.end_angle_deg);
+        if (ja.contains("rotation_axis")) {
+            cfg.acquisition.rotation_axis = { ja["rotation_axis"][0],
+                                               ja["rotation_axis"][1],
+                                               ja["rotation_axis"][2] };
+        }
+        if (ja.contains("rotation_center_mm")) {
+            cfg.acquisition.rotation_center_mm = { ja["rotation_center_mm"][0],
+                                                   ja["rotation_center_mm"][1],
+                                                   ja["rotation_center_mm"][2] };
+        }
+    }
+
     return cfg;
 }

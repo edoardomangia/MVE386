@@ -16,3 +16,9 @@ void ActionInitialization::Build() const
     
     SetUserAction(new SteppingAction(config.output_dir));
 }
+
+void ActionInitialization::BuildForMaster() const
+{
+    // Master only needs run-level actions (accumulates and writes output)
+    SetUserAction(new RunAction(config));
+}
