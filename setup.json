@@ -28,7 +28,7 @@
   },
   "acquisition": {
     "mode": "step",
-    "num_projections": 1,
+    "num_projections": 360,
     "start_angle_deg": 0.0,
     "end_angle_deg": 360.0,
     "rotation_axis": [0.0, 0.0, 1.0],

@@ -159,9 +159,16 @@ def main():
         "voxel_cp_J_kgK": cp,
     }
     write_vti(f"{prefix}_deltaT.vti", deltaT_K.astype(np.float32), dims, origin, spacing, name="deltaT_K", metadata=meta)
-
+    
+    print()
     print(f"Wrote {prefix}_dose_Gy.npy, {prefix}_deltaT_K.npy, {prefix}_deltaT.vti")
-    print(f"Assumed n_events={n_events}, flux={flux} ph/s, exposure={exposure} s, rho={rho_g_cm3} g/cm3, cp={cp} J/kg/K")
+    print()
+    print(f"n_events    = {n_events:.3e}")
+    print(f"flux        = {flux:.3e} ph/s")
+    print(f"exposure    = {exposure:.3e} s")
+    print(f"rho         = {rho_g_cm3:.3e} g/cm3")
+    print(f"cp          = {cp:.3e} J/kg/K")
+    print()
 
 
 if __name__ == "__main__":
