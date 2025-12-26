@@ -2,7 +2,7 @@
 """
 Scale and recenter STLs to match the Geant4 voxel box, writing binary *_scaled.stl.
 
-Reads setup.json for voxel_grid.half_size_mm and mesh units, fits meshes to 90%
+Reads setups/setup.json for voxel_grid.half_size_mm and mesh units, fits meshes to 90%
 of the cube, recenters to the origin, and writes <mesh_name>_scaled.stl
 alongside the source mesh (binary STL).
 
@@ -105,11 +105,12 @@ def main():
     parser.add_argument("paths", nargs="*", help="STL files to scale (binary or ASCII)")
     args = parser.parse_args()
 
-    cfg = json.load(open("setup.json"))
+    setup_path = os.path.join("setups", "setup.json")
+    cfg = json.load(open(setup_path))
     voxel_half_size = float(cfg.get("voxel_grid", {}).get("half_size_mm", 10.0))
     target = 2 * voxel_half_size * 0.9  # 90% margin
 
-    # Units from setup.json for the configured mesh, else default mm
+    # Units from setups/setup.json for the configured mesh, else default mm
     setup_units = "mm"
     if cfg.get("objects"):
         setup_units = cfg["objects"][0].get("units", "mm")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Utilities to configure gvxr scenes from setup.json-style configs.
+Utilities to configure gvxr scenes from setups/setup.json-style configs.
 """
 import json
 import numpy as np
@@ -117,4 +117,4 @@ def run_gvxr(cfg_path, output_prefix="output/test"):
     )
 
 if __name__ == "__main__":
-    run_gvxr("setup.json")
+    run_gvxr("setups/setup.json")

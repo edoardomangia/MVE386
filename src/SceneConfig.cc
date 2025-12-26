@@ -1,6 +1,6 @@
 /*
  * SceneConfig.cc
- * Setup based on setup.json
+ * Setup based on setups/setup.json
  */
 
 #include "SceneConfig.hh"
@@ -20,7 +20,12 @@ SceneConfig SceneConfig::Load(const std::string& path)
 
     SceneConfig cfg;
     cfg.config_dir = cfgPath.parent_path().string();
-    cfg.output_dir = (cfgPath.parent_path() / "output").string();
+    std::filesystem::path cfgDir = cfgPath.parent_path();
+    if (cfgDir.filename() == "setups") {
+        cfg.output_dir = (cfgDir.parent_path() / "output").string();
+    } else {
+        cfg.output_dir = (cfgDir / "output").string();
+    }
 
     auto jb = j["beam"];
     cfg.beam.type               = jb.value("type", "parallel");
@@ -46,7 +51,14 @@ SceneConfig SceneConfig::Load(const std::string& path)
     cfg.object.id        = jo["id"];
     std::filesystem::path meshPath = jo["mesh_path"].get<std::string>();
     if (meshPath.is_relative()) {
-        meshPath = cfgPath.parent_path() / meshPath;
+        std::filesystem::path configDir = cfgPath.parent_path();
+        std::filesystem::path candidate = configDir / meshPath;
+        if (!std::filesystem::exists(candidate)) {
+            // Fallback: allow data/ to stay at project root
+            std::filesystem::path projectRoot = configDir.parent_path();
+            candidate = projectRoot / meshPath;
+        }
+        meshPath = candidate;
     }
     cfg.object.mesh_path = meshPath.string();
     cfg.object.units     = jo.value("units", "mm");

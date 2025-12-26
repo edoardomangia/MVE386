@@ -131,10 +131,10 @@ def show_scene(cfg_path):
 
 if __name__ == "__main__":
     compute_temperature(
-        "setup.json",
+        "setups/setup.json",
         "output/test_meta.npz",
         "output/test_lbuffers.npz",
         output_prefix="output/test",
         )
 
-    show_scene("setup.json")
+    show_scene("setups/setup.json")

@@ -45,7 +45,7 @@ struct AcquisitionConfig {
     double end_angle_deg   = 360.0;
     std::array<double,3> rotation_axis    = {0.0, 0.0, 1.0};   // axis in world coords
     std::array<double,3> rotation_center_mm = {0.0, 0.0, 0.0}; // pivot point
-    int total_events = 0;                 // filled in from CLI nEvents
+    long long total_events = 0;           // intended total events across all chunks
 };
 
 struct SceneConfig {

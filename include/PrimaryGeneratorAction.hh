@@ -7,6 +7,7 @@
 #include "SceneConfig.hh"
 
 #include "G4VUserPrimaryGeneratorAction.hh"
+#include <atomic>
 
 class G4ParticleGun;
 
@@ -17,7 +18,10 @@ public:
 
     void GeneratePrimaries(G4Event* event) override;
 
+    static void SetEventOffset(long long offset);
+
 private:
     SceneConfig config;
     G4ParticleGun* fParticleGun;
+    static std::atomic<long long> eventOffset;
 };

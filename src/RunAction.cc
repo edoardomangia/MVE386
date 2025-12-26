@@ -15,6 +15,13 @@
 #include <sstream>
 #include <utility>
 #include <filesystem>
+#include <atomic>
+#include <mutex>
+
+namespace {
+std::once_flag gGridInitFlag;
+std::atomic<bool> gIsFinalChunk{true};
+}
 
 RunAction::RunAction(const SceneConfig& cfg)
     : config(cfg)
@@ -33,13 +40,16 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     float dy = (2.0f * half) / NY;
     float dz = (2.0f * half) / NZ;
 
-    DoseVoxelGrid::Instance().Initialize(NX, NY, NZ, xmin, ymin, zmin, dx, dy, dz);
+    std::call_once(gGridInitFlag, [&]() {
+        DoseVoxelGrid::Instance().Initialize(NX, NY, NZ, xmin, ymin, zmin, dx, dy, dz);
+    });
 
 }
 
 void RunAction::EndOfRunAction(const G4Run* run)
 {
     if (!IsMaster()) return; // Only master writes output
+    if (!RunAction::IsFinalChunk()) return; // Only write after final chunk
 
     auto& grid = DoseVoxelGrid::Instance();
 
@@ -62,7 +72,7 @@ void RunAction::EndOfRunAction(const G4Run* run)
             std::to_string(config.beam.exposure_time_s));
     
     meta.emplace_back("simulated_events", 
-            std::to_string(run->GetNumberOfEvent()));
+            std::to_string(config.acquisition.total_events));
 
     std::filesystem::path outPath = std::filesystem::path(config.output_dir) / "dose.vti";
 
@@ -72,4 +82,14 @@ void RunAction::EndOfRunAction(const G4Run* run)
                      grid.xmin, grid.ymin, grid.zmin,
                      grid.dx, grid.dy, grid.dz,
                      meta);
+}
+
+void RunAction::SetIsFinalChunk(bool v)
+{
+    gIsFinalChunk.store(v);
+}
+
+bool RunAction::IsFinalChunk()
+{
+    return gIsFinalChunk.load();
 }

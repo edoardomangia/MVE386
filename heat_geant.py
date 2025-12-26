@@ -5,16 +5,16 @@
 Convert Geant4 energy deposition (dose.vti) into dose (Gy) and temperature rise (K).
 
 Usage:
-  python heat_geant.py dose.vti n_events [setup.json] [output_prefix]
+  python heat_geant.py dose.vti n_events [setups/setup.json] [output_prefix]
     dose.vti      VTI from the Geant4 run (cell data in keV per voxel)
     n_events      Number of simulated primaries used to generate dose.vti
-    setup.json    Optional; defaults to setup.json next to the script
+    setups/setup.json    Optional; defaults to setups/setup.json
     output_prefix Optional; defaults to output/temp (dir must exist)
 
 Assumptions:
 - dose.vti stores energy deposition per voxel in keV.
-- Beam flux and exposure come from setup.json; number of simulated events is provided on CLI.
-- Material density and cp are taken from the first object in setup.json.
+- Beam flux and exposure come from setups/setup.json; number of simulated events is provided on CLI.
+- Material density and cp are taken from the first object in setups/setup.json.
 
 Outputs (under output_prefix):
 - <prefix>_dose_Gy.npy    Dose per voxel (Gy)
@@ -103,7 +103,7 @@ def write_vti(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, s
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python heat_geant.py dose.vti n_events [setup.json] [output_prefix]")
+        print("Usage: python heat_geant.py dose.vti n_events [setups/setup.json] [output_prefix]")
         sys.exit(1)
 
     vti_path = sys.argv[1]
@@ -115,7 +115,10 @@ def main():
         else:
             raise FileNotFoundError(f"VTI file not found at '{vti_path}' or '{alt}'")
     n_events = float(sys.argv[2])
-    setup_path = sys.argv[3] if len(sys.argv) > 3 else "setup.json"
+    if len(sys.argv) > 3:
+        setup_path = sys.argv[3]
+    else:
+        setup_path = os.path.join("setups", "setup.json")
     prefix = sys.argv[4] if len(sys.argv) > 4 else "output/temp"
 
     data_keV, dims, origin, spacing = parse_vti(vti_path)
@@ -160,14 +163,19 @@ def main():
     }
     write_vti(f"{prefix}_deltaT.vti", deltaT_K.astype(np.float32), dims, origin, spacing, name="deltaT_K", metadata=meta)
     
+    out_dir = os.path.dirname(prefix) or "."
+
+    print(f" --- Temperature --- ")
     print()
-    print(f"Wrote {prefix}_dose_Gy.npy, {prefix}_deltaT_K.npy, {prefix}_deltaT.vti")
+    print(f"Flux                 : {n_events:.3e} ph/s")
+    print(f"Simulated flux       : {flux:.3e} ph/s")
+    print(f"Exposure time        : {exposure:.3e} s")
+    print(f"rho                  : {rho_g_cm3:.3e} g/cm3")
+    print(f"cp                   : {cp:.3e} J/kg/K")
+    print(f"Voxel grid size      : {dims} mm")
     print()
-    print(f"n_events    = {n_events:.3e}")
-    print(f"flux        = {flux:.3e} ph/s")
-    print(f"exposure    = {exposure:.3e} s")
-    print(f"rho         = {rho_g_cm3:.3e} g/cm3")
-    print(f"cp          = {cp:.3e} J/kg/K")
+    print(f"Output directory     : {out_dir}")
+    print(f"Output               : {prefix}_dose_Gy.npy, {prefix}_deltaT_K.npy, {prefix}_deltaT.vti")
     print()
 
 

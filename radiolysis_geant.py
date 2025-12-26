@@ -1,18 +1,17 @@
 #!/usr/bin/env python
-# radiolysis_geant.py
 """
 Compute simple radiolysis yields from Geant4 energy deposition (dose.vti).
 
 Usage:
-  python radiolysis_geant.py dose.vti n_events [setup.json] [output_prefix]
+  python radiolysis_geant.py dose.vti n_events [setups/setup.json] [output_prefix]
     dose.vti      VTI from the Geant4 run (cell data in keV per voxel)
     n_events      Number of simulated primaries used to generate dose.vti
-    setup.json    Optional; defaults to setup.json next to the script
+    setups/setup.json    Optional; defaults to setups/setup.json
     output_prefix Optional; defaults to output/radiolysis (dir must exist)
 
 Assumptions:
 - dose.vti stores energy deposition per voxel in keV.
-- Beam flux and exposure come from setup.json; number of simulated events is provided on CLI.
+- Beam flux and exposure come from setups/setup.json; number of simulated events is provided on CLI.
 - Material is assumed to be bulk liquid; default radiolysis G-values are for water.
 
 Outputs (under output_prefix):
@@ -143,7 +142,7 @@ def compute_radiolysis(dose_keV: np.ndarray, scale: float, exposure_s: float, sp
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python radiolysis_geant.py dose.vti n_events [setup.json] [output_prefix]")
+        print("Usage: python radiolysis_geant.py dose.vti n_events [setups/setup.json] [output_prefix]")
         sys.exit(1)
 
     vti_path = sys.argv[1]
@@ -156,7 +155,10 @@ def main():
             raise FileNotFoundError(f"VTI file not found at '{vti_path}' or '{alt}'")
 
     n_events = float(sys.argv[2])
-    setup_path = sys.argv[3] if len(sys.argv) > 3 else "setup.json"
+    if len(sys.argv) > 3:
+        setup_path = sys.argv[3]
+    else:
+        setup_path = os.path.join("setups", "setup.json")
     prefix = sys.argv[4] if len(sys.argv) > 4 else "output/radiolysis"
 
     dose_keV, dims, origin, spacing = parse_vti(vti_path)
@@ -176,8 +178,8 @@ def main():
 
     results = compute_radiolysis(dose_keV, scale, exposure, spacing, g_values)
 
-    out_dir = os.path.dirname(prefix)
-    if out_dir:
+    out_dir = os.path.dirname(prefix) or "."
+    if out_dir and out_dir != ".":
         os.makedirs(out_dir, exist_ok=True)
 
     for species, (conc, rate) in results.items():
@@ -196,12 +198,17 @@ def main():
         write_vti_scalar(f"{base}_M.vti", conc, dims, origin, spacing, name=f"{species}_M", metadata=meta)
 
     print()
+    print(f" --- Radiolysis --- ")
+    print()
     print(f"Computed radiolysis for {len(results)} species using G-values (molecules/100 eV): {g_meta}")
-    print(f"n_events    = {n_events:.3e}")
-    print(f"flux        = {flux:.3e} ph/s")
-    print(f"exposure    = {exposure:.3e} s")
-    print(f"VTI dims    = {dims}")
-    print(f"Outputs at  = {prefix}_<species>_M.npy/.vti and _rate_Mps.npy")
+    print()
+    print(f"Flux                 : {n_events:.3e} ph/s")
+    print(f"Simulated flux       : {flux:.3e} ph/s")
+    print(f"Exposure time        : {exposure:.3e} s")
+    print(f"Voxel grid size      : {dims} mm")
+    print()
+    print(f"Output directory     : {out_dir}")
+    print(f"Output               : {prefix}_<species>_M.npy/.vti and _rate_Mps.npy")
     print()
 
 
