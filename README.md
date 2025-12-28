@@ -58,7 +58,7 @@ cmake --build . -j
 Run the simulation (from `build/`):
 ```bash
 ./run                          # uses photons = flux * exposure from setups/setup.json
-./run 500000 setups/setup.json  # override photon count or config path
+./run 500000 ../setups/setup.json  # override photon count or config path
 ```
 Notes:
 - `G4NUM_THREADS=N` overrides automatic core detection.
