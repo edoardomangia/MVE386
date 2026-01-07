@@ -25,8 +25,8 @@
       0.05
     ],
     "mono_energy_keV": 25.0,
-    "photon_flux_per_s": 1e15,
-    "exposure_time_s": 1.0
+    "photon_flux_per_s": 1e8,
+    "exposure_time_s": 5.0
   },
   "objects": [
     {

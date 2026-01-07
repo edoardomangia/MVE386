@@ -34,18 +34,18 @@
       "mesh_path": "data/Elite_Knight_-_Dark_souls_-V3_scaled.stl",
       "units": "mm",
       "material": {
-        "formula": "H2O",
-        "density_g_cm3": 1.0,
-        "cp_J_kgK": 4184.0,
+        "formula": "H2O2",
+        "density_g_cm3": 1.45,
+        "cp_J_kgK": 2620.0,
         "radiolysis": {
           "g_values_molecules_per_100eV": {
-            "OH": 2.8,
-            "e_aq": 2.7,
-            "H": 0.6,
-            "H2": 0.45,
-            "H2O2": 0.7
+            "OH": 3.0,
+            "e_aq": 1.2,
+            "H": 0.4,
+            "H2": 0.2,
+            "H2O2": 1.5
           },
-          "source": "water_default"
+          "source": "approximate_h2o2_poc"
         }
       }
     }

@@ -1,32 +1,29 @@
 #!/usr/bin/env python
 """
-Compute simple radiolysis yields from Geant4 energy deposition (dose.vti).
+Convert Geant4 energy deposition (dose.vti) into absorbed dose (Gy).
 
 Usage:
-  python radiolysis_geant.py dose.vti [setups/setup.json] [output_prefix]
+  python dosage_geant.py dose.vti [setups/setup.json] [output_prefix]
     dose.vti           VTI from the Geant4 run (cell data in keV per voxel)
     setups/setup.json  Optional; defaults to setups/setup.json
-    output_prefix      Optional; defaults to output/radiolysis (dir must exist)
+    output_prefix      Optional; defaults to output/temp (dir must exist)
 
 Assumptions:
 - dose.vti stores energy deposition per voxel in keV.
-- Beam exposure time comes from setups/setup.json.
-- material.radiolysis.g_values_molecules_per_100eV provides species-specific yields.
+- Material density is taken from the first object in setups/setup.json.
 
 Outputs (under output_prefix):
-- <prefix>_<species>_M.npy         Concentration (mol/L) per voxel
-- <prefix>_<species>_M.vti         Same field as VTI (cell data)
-- <prefix>_<species>_rate_Mps.npy  Production rate (mol/L/s) per voxel
+- <prefix>_dose_Gy.npy   Dose per voxel (Gy)
+- <prefix>_dose_Gy.vti   Same field as VTI (cell data)
 """
 
 import json
 import os
 import sys
-from typing import Dict, Tuple
 import numpy as np
 import xml.etree.ElementTree as ET
+from typing import Tuple
 
-AVOGADRO = 6.02214076e23
 
 def parse_vti(path: str):
     tree = ET.parse(path)
@@ -64,7 +61,7 @@ def parse_vti(path: str):
     return values, (nx, ny, nz), origin, spacing
 
 
-def write_vti_scalar(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, spacing, name: str, metadata=None):
+def write_vti(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, spacing, name="dose_Gy", metadata=None):
     nx, ny, nz = dims
     x0 = y0 = z0 = 0
     x1 = nx
@@ -100,36 +97,9 @@ def write_vti_scalar(path: str, data: np.ndarray, dims: Tuple[int, int, int], or
         f.write("</VTKFile>\n")
 
 
-def compute_radiolysis(dose_keV: np.ndarray, exposure_s: float, spacing_mm, g_values: Dict[str, float]):
-    """
-    dose_keV: energy deposition per voxel from Geant4 (keV)
-    exposure_s: beam exposure time (s)
-    spacing_mm: (dx, dy, dz) voxel spacing in mm
-    g_values: mapping species -> G-value (molecules / 100 eV)
-    """
-    energy_eV = dose_keV * 1e3
-    factor = energy_eV / 100.0  # number of 100 eV chunks
-
-    dx, dy, dz = spacing_mm
-    voxel_volume_m3 = (dx * 1e-3) * (dy * 1e-3) * (dz * 1e-3)
-    voxel_volume_L = voxel_volume_m3 * 1e3
-
-    results = {}
-    for species, g in g_values.items():
-        molecules = factor * g
-        mol = molecules / AVOGADRO
-        conc_M = mol / voxel_volume_L  # mol/L
-        if exposure_s > 0:
-            rate_Mps = conc_M / exposure_s
-        else:
-            rate_Mps = np.zeros_like(conc_M)
-        results[species] = (conc_M.astype(np.float32), rate_Mps.astype(np.float32))
-    return results
-
-
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python radiolysis_geant.py dose.vti [setups/setup.json] [output_prefix]")
+        print("Usage: python dosage_geant.py dose.vti [setups/setup.json] [output_prefix]")
         sys.exit(1)
 
     vti_path = sys.argv[1]
@@ -145,57 +115,42 @@ def main():
         setup_path = sys.argv[2]
     else:
         setup_path = os.path.join("setups", "setup.json")
-    prefix = sys.argv[3] if len(sys.argv) > 3 else "output/radiolysis"
+    prefix = sys.argv[3] if len(sys.argv) > 3 else "output/temp"
 
-    dose_keV, dims, origin, spacing = parse_vti(vti_path)
+    data_keV, dims, origin, spacing = parse_vti(vti_path)
 
     cfg = json.load(open(setup_path))
-    beam = cfg["beam"]
     obj = cfg["objects"][0]
     mat = obj["material"]
+    rho_g_cm3 = float(mat["density_g_cm3"])
 
-    exposure = float(beam.get("exposure_time_s", 1.0))
+    # Energy to joules
+    data_J = data_keV * 1e3 * 1.602176634e-19
 
-    radiolysis_cfg = mat.get("radiolysis")
-    if not radiolysis_cfg:
-        raise ValueError("Missing material.radiolysis in setup file (need G-values).")
-    g_values = radiolysis_cfg.get("g_values_molecules_per_100eV")
-    if not isinstance(g_values, dict) or not g_values:
-        raise ValueError("material.radiolysis.g_values_molecules_per_100eV must be a non-empty object.")
-    g_values = {k: float(v) for k, v in g_values.items()}
-    g_meta = ";".join(f"{k}:{v}" for k, v in g_values.items())
+    # Voxel volume and mass
+    dx, dy, dz = spacing  # mm
+    voxel_volume_m3 = (dx * 1e-3) * (dy * 1e-3) * (dz * 1e-3)
+    rho_kg_m3 = rho_g_cm3 * 1000.0
+    voxel_mass_kg = voxel_volume_m3 * rho_kg_m3
 
-    results = compute_radiolysis(dose_keV, exposure, spacing, g_values)
+    dose_Gy = data_J / voxel_mass_kg  # J/kg
+
+    np.save(f"{prefix}_dose_Gy.npy", dose_Gy.astype(np.float32))
+    meta = {
+        "material_formula": mat["formula"],
+        "material_density_g_cm3": rho_g_cm3,
+    }
+    write_vti(f"{prefix}_dose_Gy.vti", dose_Gy.astype(np.float32), dims, origin, spacing, name="dose_Gy", metadata=meta)
 
     out_dir = os.path.dirname(prefix) or "."
-    if out_dir and out_dir != ".":
-        os.makedirs(out_dir, exist_ok=True)
-
-    for species, (conc, rate) in results.items():
-        base = f"{prefix}_{species}"
-        np.save(f"{base}_M.npy", conc)
-        np.save(f"{base}_rate_Mps.npy", rate)
-        meta = {
-            "material_formula": obj["material"]["formula"],
-            "beam_mono_energy_keV": beam["mono_energy_keV"],
-            "beam_exposure_time_s": exposure,
-            "g_values_molecules_per_100eV": g_meta,
-            "species": species,
-        }
-        if "source" in radiolysis_cfg:
-            meta["radiolysis_source"] = radiolysis_cfg["source"]
-        write_vti_scalar(f"{base}_M.vti", conc, dims, origin, spacing, name=f"{species}_M", metadata=meta)
-
     print()
-    print(f" --- Radiolysis --- ")
+    print(" --- Dose --- ")
     print()
-    print(f"Computed radiolysis for {len(results)} species using G-values (molecules/100 eV): {g_meta}")
-    print()
-    print(f"Exposure time        : {exposure:.3e} s")
+    print(f"rho                  : {rho_g_cm3:.3e} g/cm3")
     print(f"Voxel grid size      : {dims} mm")
     print()
     print(f"Output directory     : {out_dir}")
-    print(f"Output               : {prefix}_<species>_M.npy/.vti and _rate_Mps.npy")
+    print(f"Output               : {prefix}_dose_Gy.npy, {prefix}_dose_Gy.vti")
     print()
 
 

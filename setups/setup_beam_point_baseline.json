@@ -1,6 +1,6 @@
 {
   "beam": {
-    "type": "parallel",
+    "type": "point",
     "source_position_mm": [
       -200.0,
       0.0,

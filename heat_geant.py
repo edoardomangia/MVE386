@@ -2,23 +2,20 @@
 # heat_geant.py
 
 """
-Convert Geant4 energy deposition (dose.vti) into dose (Gy) and temperature rise (K).
+Convert absorbed dose (Gy) into temperature rise (Celsius).
 
 Usage:
-  python heat_geant.py dose.vti n_events [setups/setup.json] [output_prefix]
-    dose.vti      VTI from the Geant4 run (cell data in keV per voxel)
-    n_events      Number of simulated primaries used to generate dose.vti
-    setups/setup.json    Optional; defaults to setups/setup.json
-    output_prefix Optional; defaults to output/temp (dir must exist)
+  python heat_geant.py dose_Gy.vti [setups/setup.json] [output_prefix]
+    dose_Gy.vti         VTI with absorbed dose per voxel (Gy)
+    setups/setup.json   Optional; defaults to setups/setup.json
+    output_prefix       Optional; defaults to output/temp (dir must exist)
 
 Assumptions:
-- dose.vti stores energy deposition per voxel in keV.
-- Beam flux and exposure come from setups/setup.json; number of simulated events is provided on CLI.
-- Material density and cp are taken from the first object in setups/setup.json.
+- dose_Gy.vti stores absorbed dose per voxel in Gy.
+- Material cp is taken from the first object in setups/setup.json.
 
 Outputs (under output_prefix):
-- <prefix>_dose_Gy.npy    Dose per voxel (Gy)
-- <prefix>_deltaT_K.npy   Temperature rise per voxel (K)
+- <prefix>_deltaT_C.npy   Temperature rise per voxel (C)
 - <prefix>_deltaT.vti     ParaView-friendly VTI of deltaT with metadata
 """
 
@@ -64,7 +61,7 @@ def parse_vti(path: str):
     return values, (nx, ny, nz), origin, spacing
 
 
-def write_vti(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, spacing, name="deltaT_K", metadata=None):
+def write_vti(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, spacing, name="deltaT_C", metadata=None):
     nx, ny, nz = dims
     # Cell data: extent counts points, so upper bound is number of cells
     x0 = y0 = z0 = 0
@@ -102,8 +99,8 @@ def write_vti(path: str, data: np.ndarray, dims: Tuple[int, int, int], origin, s
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python heat_geant.py dose.vti n_events [setups/setup.json] [output_prefix]")
+    if len(sys.argv) < 2:
+        print("Usage: python heat_geant.py dose_Gy.vti [setups/setup.json] [output_prefix]")
         sys.exit(1)
 
     vti_path = sys.argv[1]
@@ -114,68 +111,38 @@ def main():
             print(f"Using VTI from {vti_path}")
         else:
             raise FileNotFoundError(f"VTI file not found at '{vti_path}' or '{alt}'")
-    n_events = float(sys.argv[2])
-    if len(sys.argv) > 3:
-        setup_path = sys.argv[3]
+    if len(sys.argv) > 2:
+        setup_path = sys.argv[2]
     else:
         setup_path = os.path.join("setups", "setup.json")
-    prefix = sys.argv[4] if len(sys.argv) > 4 else "output/temp"
+    prefix = sys.argv[3] if len(sys.argv) > 3 else "output/temp"
 
-    data_keV, dims, origin, spacing = parse_vti(vti_path)
+    dose_Gy, dims, origin, spacing = parse_vti(vti_path)
 
     cfg = json.load(open(setup_path))
-    beam = cfg["beam"]
     obj = cfg["objects"][0]
     mat = obj["material"]
 
-    flux = float(beam["photon_flux_per_s"])
-    exposure = float(beam.get("exposure_time_s", 1.0))
-    rho_g_cm3 = float(mat["density_g_cm3"])
     cp = float(mat["cp_J_kgK"])
 
-    # Scale from simulated events to physical photons
-    # scale = 1.0
-    scale = (flux * exposure) / n_events
+    deltaT_C = dose_Gy / cp
 
-    # Energy to joules
-    data_keV_scaled = data_keV * scale
-    data_J = data_keV_scaled * 1e3 * 1.602176634e-19
-
-    # Voxel volume and mass
-    dx, dy, dz = spacing  # mm
-    voxel_volume_m3 = (dx * 1e-3) * (dy * 1e-3) * (dz * 1e-3)
-    rho_kg_m3 = rho_g_cm3 * 1000.0
-    voxel_mass_kg = voxel_volume_m3 * rho_kg_m3
-
-    dose_Gy = data_J / voxel_mass_kg  # J/kg
-    deltaT_K = dose_Gy / cp
-
-    np.save(f"{prefix}_dose_Gy.npy", dose_Gy.astype(np.float32))
-    np.save(f"{prefix}_deltaT_K.npy", deltaT_K.astype(np.float32))
+    np.save(f"{prefix}_deltaT_C.npy", deltaT_C.astype(np.float32))
     meta = {
         "material_formula": obj["material"]["formula"],
-        "material_density_g_cm3": rho_g_cm3,
-        "beam_mono_energy_keV": beam["mono_energy_keV"],
-        "beam_photon_flux_per_s": flux,
-        "beam_exposure_time_s": exposure,
-        "simulated_events": n_events,
         "voxel_cp_J_kgK": cp,
     }
-    write_vti(f"{prefix}_deltaT.vti", deltaT_K.astype(np.float32), dims, origin, spacing, name="deltaT_K", metadata=meta)
+    write_vti(f"{prefix}_deltaT.vti", deltaT_C.astype(np.float32), dims, origin, spacing, name="deltaT_C", metadata=meta)
     
     out_dir = os.path.dirname(prefix) or "."
 
     print(f" --- Temperature --- ")
     print()
-    print(f"Flux                 : {n_events:.3e} ph/s")
-    print(f"Simulated flux       : {flux:.3e} ph/s")
-    print(f"Exposure time        : {exposure:.3e} s")
-    print(f"rho                  : {rho_g_cm3:.3e} g/cm3")
     print(f"cp                   : {cp:.3e} J/kg/K")
     print(f"Voxel grid size      : {dims} mm")
     print()
     print(f"Output directory     : {out_dir}")
-    print(f"Output               : {prefix}_dose_Gy.npy, {prefix}_deltaT_K.npy, {prefix}_deltaT.vti")
+    print(f"Output               : {prefix}_deltaT_C.npy, {prefix}_deltaT.vti")
     print()
 
 

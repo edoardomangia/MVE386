@@ -25,7 +25,7 @@
       0.05
     ],
     "mono_energy_keV": 25.0,
-    "photon_flux_per_s": 1e15,
+    "photon_flux_per_s": 1e7,
     "exposure_time_s": 1.0
   },
   "objects": [
@@ -60,7 +60,7 @@
   },
   "acquisition": {
     "mode": "step",
-    "num_projections": 1,
+    "num_projections": 5,
     "start_angle_deg": 0.0,
     "end_angle_deg": 360.0,
     "rotation_axis": [

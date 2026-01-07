@@ -68,6 +68,14 @@ Notes:
 - `output/dose.vti` — voxelized energy deposition for ParaView.
 - (ignore) Metadata is embedded in the VTI (material, beam energy/flux, exposure, event count).
 
+## Scene preview (ParaView)
+Generate a simple geometry preview of the JSON scene (beam, detector, source, voxel box):
+```bash
+python export_scene_vtk.py setups/setup.json
+```
+Then open `output/setup_scene.vtk` in ParaView and color by `part_id`:
+1=source, 2=beam, 3=detector, 4=voxel_box.
+
 ## Workflow
 1) Adjust `setups/setup.json` (beam, mesh, material, acquisition, voxel grid).  
 2) `cmake --build . -j`.  

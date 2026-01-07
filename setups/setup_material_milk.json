@@ -35,17 +35,17 @@
       "units": "mm",
       "material": {
         "formula": "H2O",
-        "density_g_cm3": 1.0,
-        "cp_J_kgK": 4184.0,
+        "density_g_cm3": 1.032,
+        "cp_J_kgK": 3800.0,
         "radiolysis": {
           "g_values_molecules_per_100eV": {
-            "OH": 2.8,
-            "e_aq": 2.7,
-            "H": 0.6,
-            "H2": 0.45,
-            "H2O2": 0.7
+            "OH": 2.6,
+            "e_aq": 2.4,
+            "H": 0.5,
+            "H2": 0.4,
+            "H2O2": 0.6
           },
-          "source": "water_default"
+          "source": "whole_milk_proxy_poc"
         }
       }
     }

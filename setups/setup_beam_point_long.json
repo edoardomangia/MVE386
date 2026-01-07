@@ -1,13 +1,13 @@
 {
   "beam": {
-    "type": "parallel",
+    "type": "point",
     "source_position_mm": [
-      -200.0,
+      -400.0,
       0.0,
       0.0
     ],
     "detector_position_mm": [
-      200.0,
+      400.0,
       0.0,
       0.0
     ],
