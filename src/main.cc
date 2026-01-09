@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
                        .count();
 
   // Info on the run
-  std::cout << " --- Dosage --- \n \n";
+  std::cout << " --- Energy --- \n \n";
   std::cout << "Total time           : " << total_s << " s\n";
   std::cout << "Threads              : " << nThreads << "\n";
   std::cout << "Events               : " << targetEvents << "\n";

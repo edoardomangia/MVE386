@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 Export a minimal ParaView-friendly scene from setups/*.json.
 
@@ -96,6 +97,40 @@ def add_cube(points: List[Vec3], polys: List[List[int]], center: Vec3, half: flo
     return faces
 
 
+def add_oriented_box(points: List[Vec3],
+                     polys: List[List[int]],
+                     center: Vec3,
+                     right: Vec3,
+                     up: Vec3,
+                     forward: Vec3,
+                     half_w: float,
+                     half_h: float,
+                     half_l: float) -> List[List[int]]:
+    axes = (
+        v_mul(right, half_w),
+        v_mul(up, half_h),
+        v_mul(forward, half_l),
+    )
+    corners = []
+    for sx in (-1.0, 1.0):
+        for sy in (-1.0, 1.0):
+            for sz in (-1.0, 1.0):
+                offset = v_add(v_add(v_mul(axes[0], sx), v_mul(axes[1], sy)), v_mul(axes[2], sz))
+                corners.append(v_add(center, offset))
+    base = len(points)
+    points.extend(corners)
+    faces = [
+        [base + 0, base + 1, base + 3, base + 2],
+        [base + 4, base + 5, base + 7, base + 6],
+        [base + 0, base + 1, base + 5, base + 4],
+        [base + 2, base + 3, base + 7, base + 6],
+        [base + 1, base + 3, base + 7, base + 5],
+        [base + 0, base + 2, base + 6, base + 4],
+    ]
+    polys.extend(faces)
+    return faces
+
+
 def write_vtk_polydata(path: str,
                        points: List[Vec3],
                        vertices: List[List[int]],
@@ -184,15 +219,9 @@ def main() -> int:
     source_faces = add_cube(points, polys, src, box_size * 0.5)
     part_ids_polys.extend([PART_SOURCE] * len(source_faces))
 
-    # Beam line
-    beam_indices = [len(points), len(points) + 1]
-    points.extend([src, det])
-    lines.append(beam_indices)
-    part_ids_lines.append(PART_BEAM)
-
     # Detector plane
     direction = v_sub(det, src)
-    right, up, _ = orthonormal_basis(direction, up_hint)
+    right, up, forward = orthonormal_basis(direction, up_hint)
     half_w = 0.5 * float(det_pixels[0]) * float(det_pix_size[0])
     half_h = 0.5 * float(det_pixels[1]) * float(det_pix_size[1])
     c = det
@@ -206,6 +235,13 @@ def main() -> int:
     points.extend(det_pts)
     polys.append([det_base + 0, det_base + 1, det_base + 2, det_base + 3])
     part_ids_polys.append(PART_DETECTOR)
+
+    # Beam volume (box spanning source to detector, with detector footprint)
+    beam_center = v_mul(v_add(src, det), 0.5)
+    beam_half_l = 0.5 * v_norm(v_sub(det, src))
+    beam_faces = add_oriented_box(points, polys, beam_center, right, up, forward,
+                                  half_w, half_h, beam_half_l)
+    part_ids_polys.extend([PART_BEAM] * len(beam_faces))
 
     # Voxel box
     voxel_faces = add_cube(points, polys, (0.0, 0.0, 0.0), half_size)
