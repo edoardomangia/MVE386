@@ -4,8 +4,8 @@
 #SBATCH --partition=vera
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
-#SBATCH --time=03:00:00
+#SBATCH --cpus-per-task=48
+#SBATCH --time=04:00:00
 
 #SBATCH --output=log_radiolisys.out
 #SBATCH --open-mode=truncate

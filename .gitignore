@@ -7,3 +7,8 @@ Makefile
 __pycache__/
 LaTex/
 Vera/
+output/
+pics/animation*
+
+log*
+run_*
