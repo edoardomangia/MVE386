@@ -5,7 +5,7 @@ cmake_install.cmake
 Makefile
 
 __pycache__/
-LaTex/
+LaTeX/
 Vera/
 output/
 pics/animation*.png
