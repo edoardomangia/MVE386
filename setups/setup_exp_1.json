@@ -25,7 +25,7 @@
       0.05
     ],
     "mono_energy_keV": 25.0,
-    "photon_flux_per_s": 1000000000.0,
+    "photon_flux_per_s": 100000000.0,
     "exposure_time_s": 1.0
   },
   "objects": [
@@ -34,18 +34,18 @@
       "mesh_path": "data/Elite_Knight_-_Dark_souls_-V3_scaled.stl",
       "units": "mm",
       "material": {
-        "formula": "H2O",
-        "density_g_cm3": 1.0,
-        "cp_J_kgK": 4184.0,
+        "formula": "Ca10(PO4)6(OH)2",
+        "density_g_cm3": 3.15,
+        "cp_J_kgK": 800.0,
         "radiolysis": {
           "g_values_molecules_per_100eV": {
-            "OH": 2.8,
-            "e_aq": 2.7,
-            "H": 0.6,
-            "H2": 0.45,
-            "H2O2": 0.7
+            "OH": 0.3,
+            "e_aq": 0.05,
+            "H": 0.05,
+            "H2": 0.1,
+            "H2O2": 0.05
           },
-          "source": "water_default"
+          "source": "hydroxyapatite_proxy_poc"
         }
       }
     }

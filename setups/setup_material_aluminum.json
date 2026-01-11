@@ -34,18 +34,18 @@
       "mesh_path": "data/Elite_Knight_-_Dark_souls_-V3_scaled.stl",
       "units": "mm",
       "material": {
-        "formula": "Ca10(PO4)6(OH)2",
-        "density_g_cm3": 3.15,
-        "cp_J_kgK": 800.0,
+        "formula": "Al",
+        "density_g_cm3": 2.70,
+        "cp_J_kgK": 897.0,
         "radiolysis": {
           "g_values_molecules_per_100eV": {
-            "OH": 0.3,
-            "e_aq": 0.05,
-            "H": 0.05,
-            "H2": 0.1,
-            "H2O2": 0.05
+            "OH": 0.0,
+            "e_aq": 0.0,
+            "H": 0.0,
+            "H2": 0.0,
+            "H2O2": 0.0
           },
-          "source": "hydroxyapatite_proxy_poc"
+          "source": "metal_no_radiolysis"
         }
       }
     }
@@ -60,7 +60,7 @@
   },
   "acquisition": {
     "mode": "step",
-    "num_projections": 5,
+    "num_projections": 1,
     "start_angle_deg": 0.0,
     "end_angle_deg": 360.0,
     "rotation_axis": [

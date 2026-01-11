@@ -1,0 +1,25 @@
+This job can be monitored from: https://job.c3se.chalmers.se/vera/7764741
+-- The CXX compiler identification is GNU 13.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /apps/Arch/software/GCCcore/13.2.0/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found EXPAT: /apps/Arch/software/expat/2.5.0-GCCcore-13.2.0/lib/libexpat.so (found suitable version "2.5.0", minimum required is "2.5.0") 
+-- Found ZLIB: /apps/Arch/software/assimp/5.3.1-GCCcore-13.2.0/lib/libzlibstatic.a (found suitable version "1.2.13", minimum required is "1.2.13")  
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Check if compiler accepts -pthread
+CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
+CMake Error at /apps/Arch/software/CMake/3.27.6-GCCcore-13.2.0/share/cmake-3.27/Modules/FindThreads.cmake:136 (try_compile):
+  Failed to configure test project build system.
+Call Stack (most recent call first):
+  /apps/Arch/software/CMake/3.27.6-GCCcore-13.2.0/share/cmake-3.27/Modules/FindThreads.cmake:169 (_threads_check_flag_pthread)
+  /apps/Arch/software/CMake/3.27.6-GCCcore-13.2.0/share/cmake-3.27/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /apps/Arch/software/Geant4/11.3.0-GCC-13.2.0/lib64/cmake/Geant4/PTL/PTLConfig.cmake:56 (find_dependency)
+  /apps/Arch/software/CMake/3.27.6-GCCcore-13.2.0/share/cmake-3.27/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /apps/Arch/software/Geant4/11.3.0-GCC-13.2.0/lib64/cmake/Geant4/Geant4Config.cmake:301 (find_dependency)
+  CMakeLists.txt:7 (find_package)
+
+
+-- Configuring incomplete, errors occurred!

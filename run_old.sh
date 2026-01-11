@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=TRA220
+#SBATCH --job-name=run_old
 #SBATCH --partition=vera
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=32
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 
 #SBATCH --output=log.out
 #SBATCH --open-mode=truncate
@@ -82,9 +82,9 @@ for cfg in "${SETUPS[@]}"; do
   heat_prefix="output/heat_${base}"
   rad_prefix="output/rad_${base}"
 
-  srun ./dosage_geant.py "$vti_out" "$cfg" "$dose_prefix"
-  srun ./heat_geant.py "${dose_prefix}_dose_Gy.vti" "$cfg" "$heat_prefix"
-  srun ./radiolysis_geant.py "$vti_out" "$cfg" "$rad_prefix"
+  srun ./dosage.py "$vti_out" "$cfg" "$dose_prefix"
+  srun ./temperature.py "${dose_prefix}_dose_Gy.vti" "$cfg" "$heat_prefix"
+  srun ./radiolisys.py "$vti_out" "$cfg" "$rad_prefix"
 
   module purge
   module load GCCcore/13.2.0

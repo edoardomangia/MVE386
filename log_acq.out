@@ -1,0 +1,49 @@
+This job can be monitored from: https://job.c3se.chalmers.se/vera/7764740
+-- The CXX compiler identification is GNU 13.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /apps/Arch/software/GCCcore/13.2.0/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found EXPAT: /apps/Arch/software/expat/2.5.0-GCCcore-13.2.0/lib/libexpat.so (found suitable version "2.5.0", minimum required is "2.5.0") 
+-- Found ZLIB: /apps/Arch/software/assimp/5.3.1-GCCcore-13.2.0/lib/libzlibstatic.a (found suitable version "1.2.13", minimum required is "1.2.13")  
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found XercesC: /apps/Arch/software/Xerces-C++/3.2.5-GCCcore-13.2.0/lib/libxerces-c.so (found suitable version "3.2.5", minimum required is "3.2.5") 
+-- Found X11: /apps/Arch/software/X11/20231019-GCCcore-13.2.0/include   
+-- Looking for XOpenDisplay in /apps/Arch/software/X11/20231019-GCCcore-13.2.0/lib/libX11.so;/apps/Arch/software/X11/20231019-GCCcore-13.2.0/lib/libXext.so
+-- Looking for XOpenDisplay in /apps/Arch/software/X11/20231019-GCCcore-13.2.0/lib/libX11.so;/apps/Arch/software/X11/20231019-GCCcore-13.2.0/lib/libXext.so - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for connect
+-- Looking for connect - found
+-- Looking for remove
+-- Looking for remove - found
+-- Looking for shmat
+-- Looking for shmat - found
+-- Looking for IceConnectionNumber in ICE
+-- Looking for IceConnectionNumber in ICE - found
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE  
+-- Found OpenGL: /apps/Arch/software/libglvnd/1.7.0-GCCcore-13.2.0/lib/libOpenGL.so   
+-- Found WrapOpenGL: TRUE  
+-- Found XKB: /apps/Arch/software/X11/20231019-GCCcore-13.2.0/lib/libxkbcommon.so (found suitable version "1.6.0", minimum required is "0.5.0") 
+-- Found Geant4: /apps/Arch/software/Geant4/11.3.0-GCC-13.2.0/lib64/cmake/Geant4/Geant4Config.cmake (found version "11.3.0") 
+-- Configuring done (8.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /cephyr/users/edoardom/Vera/MVE386/build
+[100%] Built target run
+[run] Starting setups/setup_acq_fly.json
+
+**************************************************************
+ Geant4 version Name: geant4-11-03 [MT]   (6-December-2024)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+

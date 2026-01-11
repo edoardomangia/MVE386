@@ -4,6 +4,8 @@ _...WIP_
 
 This project couples gVXR (fast Beer–Lambert rendering) with Geant4 (Monte Carlo transport) from a shared JSON scene description (`setups/setup.json`). The mesh phantom, materials, beam, detector, and acquisition schedule are defined once and reused across Python and C++ paths.
 
+![Simulation animation](pics/animation_energy_setup_energy_25keV.gif)
+
 ## Prerequisites
 - Geant4 with multithreading and visualization.
 - Assimp (for CADMesh STL loading).
@@ -80,5 +82,5 @@ Then open `output/setup_scene.vtk` in ParaView and color by `part_id`:
 1) Adjust `setups/setup.json` (beam, mesh, material, acquisition, voxel grid).  
 2) `cmake --build . -j`.  
 3) `./run` to generate `output/dose.vti`.  
-4) `./heat_geant4.py` to generate `<prefix>_deltaT.vti`.  
+4) `./temperature.py` to generate `<prefix>_deltaT.vti`.  
 5) Inspect `.vti` files in ParaView.

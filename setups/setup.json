@@ -1,31 +1,13 @@
 {
   "beam": {
     "type": "parallel",
-    "source_position_mm": [
-      -200.0,
-      0.0,
-      0.0
-    ],
-    "detector_position_mm": [
-      200.0,
-      0.0,
-      0.0
-    ],
-    "detector_up": [
-      0.0,
-      1.0,
-      0.0
-    ],
-    "detector_pixels": [
-      1024,
-      1024
-    ],
-    "detector_pixel_size_mm": [
-      0.05,
-      0.05
-    ],
+    "source_position_mm": [-200.0, 0.0, 0.0],
+    "detector_position_mm": [200.0, 0.0, 0.0],
+    "detector_up": [0.0, 1.0, 0.0],
+    "detector_pixels": [1024, 1024],
+    "detector_pixel_size_mm": [0.05, 0.05],
     "mono_energy_keV": 25.0,
-    "photon_flux_per_s": 1000000000.0,
+    "photon_flux_per_s": 1e15,
     "exposure_time_s": 1.0
   },
   "objects": [
@@ -51,11 +33,7 @@
     }
   ],
   "voxel_grid": {
-    "counts": [
-      100,
-      100,
-      100
-    ],
+    "counts": [100, 100, 100],
     "half_size_mm": 10.0
   },
   "acquisition": {
@@ -63,15 +41,7 @@
     "num_projections": 1,
     "start_angle_deg": 0.0,
     "end_angle_deg": 360.0,
-    "rotation_axis": [
-      0.0,
-      0.0,
-      1.0
-    ],
-    "rotation_center_mm": [
-      0.0,
-      0.0,
-      0.0
-    ]
+    "rotation_axis": [0.0, 0.0, 1.0],
+    "rotation_center_mm": [0.0, 0.0, 0.0]
   }
 }

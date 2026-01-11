@@ -131,6 +131,26 @@ def add_oriented_box(points: List[Vec3],
     return faces
 
 
+def add_pyramid(points: List[Vec3],
+                polys: List[List[int]],
+                apex: Vec3,
+                base_pts: List[Vec3]) -> List[List[int]]:
+    if len(base_pts) != 4:
+        raise ValueError("base_pts must have 4 points")
+    base = len(points)
+    points.append(apex)
+    points.extend(base_pts)
+    faces = [
+        [base + 0, base + 1, base + 2],
+        [base + 0, base + 2, base + 3],
+        [base + 0, base + 3, base + 4],
+        [base + 0, base + 4, base + 1],
+        [base + 1, base + 2, base + 3, base + 4],
+    ]
+    polys.extend(faces)
+    return faces
+
+
 def write_vtk_polydata(path: str,
                        points: List[Vec3],
                        vertices: List[List[int]],
@@ -236,11 +256,14 @@ def main() -> int:
     polys.append([det_base + 0, det_base + 1, det_base + 2, det_base + 3])
     part_ids_polys.append(PART_DETECTOR)
 
-    # Beam volume (box spanning source to detector, with detector footprint)
-    beam_center = v_mul(v_add(src, det), 0.5)
-    beam_half_l = 0.5 * v_norm(v_sub(det, src))
-    beam_faces = add_oriented_box(points, polys, beam_center, right, up, forward,
-                                  half_w, half_h, beam_half_l)
+    # Beam volume
+    if beam.get("type", "parallel") == "point":
+        beam_faces = add_pyramid(points, polys, src, det_pts)
+    else:
+        beam_center = v_mul(v_add(src, det), 0.5)
+        beam_half_l = 0.5 * v_norm(v_sub(det, src))
+        beam_faces = add_oriented_box(points, polys, beam_center, right, up, forward,
+                                      half_w, half_h, beam_half_l)
     part_ids_polys.extend([PART_BEAM] * len(beam_faces))
 
     # Voxel box

@@ -1,9 +1,10 @@
 \section{Results}
 \label{sec:results}
 
-This section summarizes the simulation outputs produced by \texttt{run.sh}. Each subsection corresponds to a subgroup of setup files and contains placeholders for ParaView screenshots. Replace each placeholder image with the corresponding figure (named after the setup JSON file).
+This section summarizes the simulation outputs produced by \texttt{run.sh}. The results are shown as ParaView screenshots of the output \texttt{.vti} fields (dose, temperature rise, and radiolysis species). Each figure placeholder is named after the setup JSON file so that the images can be dropped into \texttt{figures/} without renaming. In each sweep, the visualization should keep consistent color maps and ranges to make qualitative comparisons meaningful.
 
 \subsection{Acquisition mode sweep (\\texttt{setup\\_acq\\_*})}
+This sweep compares acquisition strategies (fly, step1, step5). The total number of photons is kept comparable across modes, but the spatial distribution of dose and secondary quantities can differ because of how projections are sampled in space and time. In the examples, look for changes in streaking, sharpness of edges, and uniformity across the volume when moving from continuous fly acquisition to larger step sizes.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_acq_fly.json.png}
@@ -26,6 +27,7 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
 \end{figure}
 
 \subsection{Beam geometry sweep (\\texttt{setup\\_beam\\_*})}
+This sweep contrasts parallel and point sources, and point-source variations. The beam geometry controls the divergence, footprint at the detector plane, and depth-dependent dose distribution. In the images, note changes in beam spread, central peak intensity, and how rapidly dose falls off with distance from the beam axis.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_beam_parallel.json.png}
@@ -55,6 +57,7 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
 \end{figure}
 
 \subsection{Beam energy sweep (\\texttt{setup\\_energy\\_*})}
+This sweep shows how beam energy affects penetration and energy deposition. Lower energies are expected to deposit more energy near the entry surface, while higher energies penetrate deeper. When comparing images, look for the depth at which dose peaks and the overall attenuation profile through the volume.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_energy_100keV.json.png}
@@ -77,6 +80,7 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
 \end{figure}
 
 \subsection{Exposure time sweep (\\texttt{setup\\_exp\\_*})}
+This sweep varies exposure time with a fixed photon flux. The total number of simulated photons scales with exposure time, so dose, temperature rise, and radiolysis yields should increase proportionally. In the images, compare the overall magnitude and any saturation of the color scale rather than the qualitative shape.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_exp_1.json.png}
@@ -99,6 +103,7 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
 \end{figure}
 
 \subsection{Voxel grid sweep (\\texttt{setup\\_grid\\_*})}
+This sweep changes the voxel grid resolution while keeping the physical volume fixed. Finer grids better resolve gradients but increase runtime and memory usage. In the results, observe how sharp features and peak values are represented with coarse versus fine grids, and whether the qualitative patterns are stable across resolutions.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_grid_10.json.png}
@@ -114,6 +119,7 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
 \end{figure}
 
 \subsection{Material sweep (\\texttt{setup\\_material\\_*})}
+This sweep varies the phantom material (bone, ethanol, milk, water). Differences in density and composition influence attenuation, dose deposition, and secondary chemistry. In the figures, compare absolute dose levels, penetration depth, and any material-specific patterns in radiolysis species.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/setup_material_bone.json.png}
@@ -141,3 +147,25 @@ This section summarizes the simulation outputs produced by \texttt{run.sh}. Each
   \caption{Results for setup\_material\_water.json.}
   \label{fig:mat-water}
 \end{figure}
+
+\subsection{Radiolysis outputs}
+Radiolysis results are exported as per-voxel concentration fields (mol/L) and production rates (mol/L/s) for reactive species (OH, e\_aq, H, H$_2$, H$_2$O$_2$). The \texttt{.vti} images show spatial patterns of chemistry driven by dose deposition, so regions of high dose should correspond to higher species concentrations and rates. Use the same color scale across cases to compare relative magnitudes.
+
+In addition to images, the following table is a placeholder for numerical summaries extracted from the radiolysis fields (for example, maximum concentration and volume-averaged concentration for each species in the central volume of interest).
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Example numerical summaries for radiolysis species (replace with computed values).}
+%   \label{tab:radiolysis-summary}
+%   \begin{tabular}{lcc}
+%     \hline
+%     \textbf{Species} & \textbf{Max concentration (mol/L)} & \textbf{Mean concentration (mol/L)} \\
+%     \hline
+%     OH        & \textit{...} & \textit{...} \\
+%     e\_aq     & \textit{...} & \textit{...} \\
+%     H         & \textit{...} & \textit{...} \\
+%     H$_2$     & \textit{...} & \textit{...} \\
+%     H$_2$O$_2$ & \textit{...} & \textit{...} \\
+%     \hline
+%   \end{tabular}
+% \end{table}

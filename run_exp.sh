@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=TRA220
+#SBATCH --job-name=run_exp
 #SBATCH --partition=vera
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=32
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 
 #SBATCH --output=log_exp.out
 #SBATCH --open-mode=truncate
@@ -28,7 +28,7 @@ cmake --build build -j "${SLURM_CPUS_PER_TASK:-32}"
 
 export G4NUM_THREADS="${SLURM_CPUS_PER_TASK:-32}"
 
-mkdir -p output
+mkdir -p output/energy output/dose output/heat output/radiolisys
 
 # Some scene descriptions 
 SETUPS=(
@@ -43,16 +43,9 @@ failed_runs=()
 
 for cfg in "${SETUPS[@]}"; do
   base=$(basename "$cfg" .json)
-  vti_out="output/dose_${base}.vti"
+  vti_out="output/energy/energy_${base}.vti"
 
   echo "[run] Starting ${cfg}"
-
-  # Visualizer for the scene, just to understand how it looks like
-  if ! srun ./export_scene_vtk.py "$cfg" -o "output/${base}_scene.vtk"; then
-    echo "[run] FAILED export_scene_vtk.py for ${cfg}"
-    failed_runs+=("${cfg}:export_scene_vtk")
-    continue
-  fi
 
   # Geant4 code
   if ! srun build/run --setup "$cfg"; then
@@ -67,53 +60,53 @@ for cfg in "${SETUPS[@]}"; do
     continue
   fi
 
-  module purge
-  module load gfbf/2025b
-  module load SciPy-bundle/2025.07-gfbf-2025b
+  #module purge
+  #module load gfbf/2025b
+  #module load SciPy-bundle/2025.07-gfbf-2025b
 
-  # Post-processing scripts
-  dose_prefix="output/dose_${base}"
-  heat_prefix="output/heat_${base}"
-  rad_prefix="output/rad_${base}"
+  ## Post-processing scripts
+  #dose_prefix="output/dose/dose_${base}"
+  #heat_prefix="output/heat/heat_${base}"
+  #rad_prefix="output/radiolisys/rad_${base}"
 
-  if ! srun ./dosage_geant.py "$vti_out" "$cfg" "$dose_prefix"; then
-    echo "[run] FAILED dosage_geant.py for ${cfg}"
-    failed_runs+=("${cfg}:dosage_geant")
-    module purge
-    module load GCCcore/13.2.0
-    module load CMake/3.27.6-GCCcore-13.2.0
-    module load Geant4/11.3.0-GCC-13.2.0
-    module load assimp/5.3.1-GCCcore-13.2.0
-    continue
-  fi
+  #if ! srun ./dosage.py "$vti_out" "$cfg" "$dose_prefix"; then
+  #  echo "[run] FAILED dosage.py for ${cfg}"
+  #  failed_runs+=("${cfg}:dosage")
+  #  module purge
+  #  module load GCCcore/13.2.0
+  #  module load CMake/3.27.6-GCCcore-13.2.0
+  #  module load Geant4/11.3.0-GCC-13.2.0
+  #  module load assimp/5.3.1-GCCcore-13.2.0
+  #  continue
+  #fi
 
-  if ! srun ./heat_geant.py "${dose_prefix}_dose_Gy.vti" "$cfg" "$heat_prefix"; then
-    echo "[run] FAILED heat_geant.py for ${cfg}"
-    failed_runs+=("${cfg}:heat_geant")
-    module purge
-    module load GCCcore/13.2.0
-    module load CMake/3.27.6-GCCcore-13.2.0
-    module load Geant4/11.3.0-GCC-13.2.0
-    module load assimp/5.3.1-GCCcore-13.2.0
-    continue
-  fi
+  #if ! srun ./temperature.py "${dose_prefix}_dose_Gy.vti" "$cfg" "$heat_prefix"; then
+  #  echo "[run] FAILED temperature.py for ${cfg}"
+  #  failed_runs+=("${cfg}:temperature")
+  #  module purge
+  #  module load GCCcore/13.2.0
+  #  module load CMake/3.27.6-GCCcore-13.2.0
+  #  module load Geant4/11.3.0-GCC-13.2.0
+  #  module load assimp/5.3.1-GCCcore-13.2.0
+  #  continue
+  #fi
 
-  if ! srun ./radiolysis_geant.py "$vti_out" "$cfg" "$rad_prefix"; then
-    echo "[run] FAILED radiolysis_geant.py for ${cfg}"
-    failed_runs+=("${cfg}:radiolysis_geant")
-    module purge
-    module load GCCcore/13.2.0
-    module load CMake/3.27.6-GCCcore-13.2.0
-    module load Geant4/11.3.0-GCC-13.2.0
-    module load assimp/5.3.1-GCCcore-13.2.0
-    continue
-  fi
+  #if ! srun ./radiolisys.py "$vti_out" "$cfg" "$rad_prefix"; then
+  #  echo "[run] FAILED radiolisys.py for ${cfg}"
+  #  failed_runs+=("${cfg}:radiolisys")
+  #  module purge
+  #  module load GCCcore/13.2.0
+  #  module load CMake/3.27.6-GCCcore-13.2.0
+  #  module load Geant4/11.3.0-GCC-13.2.0
+  #  module load assimp/5.3.1-GCCcore-13.2.0
+  #  continue
+  #fi
 
-  module purge
-  module load GCCcore/13.2.0
-  module load CMake/3.27.6-GCCcore-13.2.0
-  module load Geant4/11.3.0-GCC-13.2.0
-  module load assimp/5.3.1-GCCcore-13.2.0
+  #module purge
+  #module load GCCcore/13.2.0
+  #module load CMake/3.27.6-GCCcore-13.2.0
+  #module load Geant4/11.3.0-GCC-13.2.0
+  #module load assimp/5.3.1-GCCcore-13.2.0
 done
 
 if [ "${#failed_runs[@]}" -gt 0 ]; then
@@ -124,4 +117,3 @@ if [ "${#failed_runs[@]}" -gt 0 ]; then
 else
   echo "[run] All runs completed successfully."
 fi
-

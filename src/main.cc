@@ -84,13 +84,9 @@ int main(int argc, char **argv) {
     configPath = defaultConfig;
   }
   SceneConfig cfg = SceneConfig::Load(configPath.string());
-  // Default event count from flux * exposure; for step mode
-  auto photonsPerProjection =
+  // Default event count from flux * exposure (independent of projections)
+  double totalPhotons =
       cfg.beam.photon_flux_per_s * cfg.beam.exposure_time_s;
-  double totalPhotons = photonsPerProjection;
-  if (cfg.acquisition.mode != "fly") {
-    totalPhotons *= std::max(1, cfg.acquisition.num_projections);
-  }
 
   long long targetEvents = 0;
   if (cliEvents.has_value()) {
