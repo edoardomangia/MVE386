@@ -4,7 +4,7 @@ _...WIP_
 
 This project couples gVXR (fast Beer–Lambert rendering) with Geant4 (Monte Carlo transport) from a shared JSON scene description (`setups/setup.json`). The mesh phantom, materials, beam, detector, and acquisition schedule are defined once and reused across Python and C++ paths.
 
-![Simulation animation](pics/animation_energy_setup_acq_step1.gif)
+<img src="pics/animation_energy_setup_acq_step1.gif" alt="Simulation animation" width="600">
 
 ## Prerequisites
 - Geant4 with multithreading and visualization.
